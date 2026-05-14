@@ -36,7 +36,17 @@ from tradingagents.agents.utils.agent_utils import (
     get_income_statement,
     get_news,
     get_insider_transactions,
-    get_global_news
+    get_global_news,
+    # Signal-layer tools (A-stock specific). Bound to fundamentals/hot_money/
+    # lockup ToolNodes so analyst bind_tools() references resolve at runtime.
+    get_profit_forecast,
+    get_hot_stocks,
+    get_northbound_flow,
+    get_concept_blocks,
+    get_fund_flow,
+    get_dragon_tiger_board,
+    get_lockup_expiry,
+    get_industry_comparison,
 )
 
 from .checkpointer import checkpoint_step, clear_checkpoint, get_checkpointer, thread_id
@@ -186,6 +196,41 @@ class TradingAgentsGraph:
                     get_balance_sheet,
                     get_cashflow,
                     get_income_statement,
+                    # Signal-layer additions: consensus EPS + industry ranking.
+                    # Harmless for US tickers — the a_stock vendor returns an
+                    # error string and the analyst moves on.
+                    get_profit_forecast,
+                    get_industry_comparison,
+                ]
+            ),
+            # A-stock specialised analyst tool nodes. Only used when the
+            # corresponding analyst ("policy" / "hot_money" / "lockup") is
+            # included in selected_analysts.
+            "policy": ToolNode(
+                [
+                    get_news,
+                    get_global_news,
+                ]
+            ),
+            "hot_money": ToolNode(
+                [
+                    get_stock_data,
+                    get_news,
+                    get_insider_transactions,
+                    get_hot_stocks,
+                    get_northbound_flow,
+                    get_concept_blocks,
+                    get_fund_flow,
+                    get_dragon_tiger_board,
+                    get_industry_comparison,
+                ]
+            ),
+            "lockup": ToolNode(
+                [
+                    get_insider_transactions,
+                    get_news,
+                    get_fundamentals,
+                    get_lockup_expiry,
                 ]
             ),
         }

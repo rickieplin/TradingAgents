@@ -32,6 +32,17 @@ dependencies = [
     "yfinance>=0.2.63",
 ]
 
+[project.optional-dependencies]
+# A-stock (mainland China) data vendor: install with `pip install ".[a_stock]"`.
+# mootdx provides TCP access to broker quote servers (OHLCV + F10);
+# akshare wraps free Chinese data sources (sina/eastmoney/同花顺/百度) for
+# news, financial statements, dragon-tiger board, lockup expiries, etc.
+a_stock = [
+    "mootdx>=0.11.0",
+    "akshare>=1.16.0",
+    "python-dateutil>=2.8.2",
+]
+
 [project.scripts]
 tradingagents = "cli.main:app"
 

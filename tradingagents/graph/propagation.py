@@ -52,6 +52,13 @@ class Propagator:
             "fundamentals_report": "",
             "sentiment_report": "",
             "news_report": "",
+            # A-stock specialised analysts — initialised even when not selected
+            # so downstream nodes (Quality Gate, researchers) can use state.get()
+            # without KeyError when the analyst was skipped.
+            "policy_report": "",
+            "hot_money_report": "",
+            "lockup_report": "",
+            "data_quality_summary": "",
         }
 
     def get_graph_args(self, callbacks: Optional[List] = None) -> Dict[str, Any]:

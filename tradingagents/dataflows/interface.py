@@ -23,6 +23,25 @@ from .alpha_vantage import (
     get_global_news as get_alpha_vantage_global_news,
 )
 from .alpha_vantage_common import AlphaVantageRateLimitError
+from .a_stock import (
+    get_stock_data as get_astock_stock_data,
+    get_indicators as get_astock_indicators,
+    get_fundamentals as get_astock_fundamentals,
+    get_balance_sheet as get_astock_balance_sheet,
+    get_cashflow as get_astock_cashflow,
+    get_income_statement as get_astock_income_statement,
+    get_news as get_astock_news,
+    get_global_news as get_astock_global_news,
+    get_insider_transactions as get_astock_insider_transactions,
+    get_profit_forecast as get_astock_profit_forecast,
+    get_hot_stocks as get_astock_hot_stocks,
+    get_northbound_flow as get_astock_northbound_flow,
+    get_concept_blocks as get_astock_concept_blocks,
+    get_fund_flow as get_astock_fund_flow,
+    get_dragon_tiger_board as get_astock_dragon_tiger_board,
+    get_lockup_expiry as get_astock_lockup_expiry,
+    get_industry_comparison as get_astock_industry_comparison,
+)
 
 # Configuration and routing logic
 from .config import get_config
@@ -57,55 +76,103 @@ TOOLS_CATEGORIES = {
             "get_global_news",
             "get_insider_transactions",
         ]
-    }
+    },
+    "signal_data": {
+        "description": "A-stock signal layer (topic attribution, capital flow, consensus forecast, dragon-tiger, lockup, industry)",
+        "tools": [
+            "get_profit_forecast",
+            "get_hot_stocks",
+            "get_northbound_flow",
+            "get_concept_blocks",
+            "get_fund_flow",
+            "get_dragon_tiger_board",
+            "get_lockup_expiry",
+            "get_industry_comparison",
+        ]
+    },
 }
 
 VENDOR_LIST = [
     "yfinance",
     "alpha_vantage",
+    "a_stock",
 ]
 
 # Mapping of methods to their vendor-specific implementations
 VENDOR_METHODS = {
     # core_stock_apis
     "get_stock_data": {
+        "a_stock": get_astock_stock_data,
         "alpha_vantage": get_alpha_vantage_stock,
         "yfinance": get_YFin_data_online,
     },
     # technical_indicators
     "get_indicators": {
+        "a_stock": get_astock_indicators,
         "alpha_vantage": get_alpha_vantage_indicator,
         "yfinance": get_stock_stats_indicators_window,
     },
     # fundamental_data
     "get_fundamentals": {
+        "a_stock": get_astock_fundamentals,
         "alpha_vantage": get_alpha_vantage_fundamentals,
         "yfinance": get_yfinance_fundamentals,
     },
     "get_balance_sheet": {
+        "a_stock": get_astock_balance_sheet,
         "alpha_vantage": get_alpha_vantage_balance_sheet,
         "yfinance": get_yfinance_balance_sheet,
     },
     "get_cashflow": {
+        "a_stock": get_astock_cashflow,
         "alpha_vantage": get_alpha_vantage_cashflow,
         "yfinance": get_yfinance_cashflow,
     },
     "get_income_statement": {
+        "a_stock": get_astock_income_statement,
         "alpha_vantage": get_alpha_vantage_income_statement,
         "yfinance": get_yfinance_income_statement,
     },
     # news_data
     "get_news": {
+        "a_stock": get_astock_news,
         "alpha_vantage": get_alpha_vantage_news,
         "yfinance": get_news_yfinance,
     },
     "get_global_news": {
+        "a_stock": get_astock_global_news,
         "yfinance": get_global_news_yfinance,
         "alpha_vantage": get_alpha_vantage_global_news,
     },
     "get_insider_transactions": {
+        "a_stock": get_astock_insider_transactions,
         "alpha_vantage": get_alpha_vantage_insider_transactions,
         "yfinance": get_yfinance_insider_transactions,
+    },
+    # signal_data (A-stock only; no US-market equivalents)
+    "get_profit_forecast": {
+        "a_stock": get_astock_profit_forecast,
+    },
+    "get_hot_stocks": {
+        "a_stock": get_astock_hot_stocks,
+    },
+    "get_northbound_flow": {
+        "a_stock": get_astock_northbound_flow,
+    },
+    "get_concept_blocks": {
+        "a_stock": get_astock_concept_blocks,
+    },
+    "get_fund_flow": {
+        "a_stock": get_astock_fund_flow,
+    },
+    "get_dragon_tiger_board": {
+        "a_stock": get_astock_dragon_tiger_board,
+    },
+    "get_lockup_expiry": {
+        "a_stock": get_astock_lockup_expiry,
+    },
+    "get_industry_comparison": {
+        "a_stock": get_astock_industry_comparison,
     },
 }
 

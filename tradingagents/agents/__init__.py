@@ -8,6 +8,12 @@ from .analysts.sentiment_analyst import (
     create_sentiment_analyst,
     create_social_media_analyst,  # deprecated alias kept for back-compat
 )
+# A-stock specialised analysts (opt-in via selected_analysts)
+from .analysts.policy_analyst import create_policy_analyst
+from .analysts.hot_money_tracker import create_hot_money_tracker
+from .analysts.lockup_watcher import create_lockup_watcher
+
+from .quality_gate import create_quality_gate
 
 from .researchers.bear_researcher import create_bear_researcher
 from .researchers.bull_researcher import create_bull_researcher
@@ -38,5 +44,9 @@ __all__ = [
     "create_conservative_debator",
     "create_sentiment_analyst",
     "create_social_media_analyst",  # deprecated; will be removed in a future version
+    "create_policy_analyst",
+    "create_hot_money_tracker",
+    "create_lockup_watcher",
+    "create_quality_gate",
     "create_trader",
 ]

@@ -34,9 +34,16 @@ class GraphSetup:
         Args:
             selected_analysts (list): List of analyst types to include. Options are:
                 - "market": Market analyst
-                - "social": Social media analyst
+                - "social": Sentiment analyst (legacy key)
                 - "news": News analyst
                 - "fundamentals": Fundamentals analyst
+                - "policy": Policy analyst (A-stock specific, opt-in)
+                - "hot_money": Hot money / capital flow tracker (A-stock specific, opt-in)
+                - "lockup": Lockup expiry / reduction watcher (A-stock specific, opt-in)
+
+            When any analyst is selected, a Quality Gate node runs after the
+            last analyst's Msg Clear and before the Bull Researcher, writing a
+            data_quality_summary that downstream agents can use.
         """
         if len(selected_analysts) == 0:
             raise ValueError("Trading Agents Graph Setup Error: no analysts selected!")
@@ -78,6 +85,26 @@ class GraphSetup:
             delete_nodes["fundamentals"] = create_msg_delete()
             tool_nodes["fundamentals"] = self.tool_nodes["fundamentals"]
 
+        # A-stock specialised analysts (opt-in: only run when explicitly requested)
+        if "policy" in selected_analysts:
+            analyst_nodes["policy"] = create_policy_analyst(self.quick_thinking_llm)
+            delete_nodes["policy"] = create_msg_delete()
+            tool_nodes["policy"] = self.tool_nodes["policy"]
+
+        if "hot_money" in selected_analysts:
+            analyst_nodes["hot_money"] = create_hot_money_tracker(self.quick_thinking_llm)
+            delete_nodes["hot_money"] = create_msg_delete()
+            tool_nodes["hot_money"] = self.tool_nodes["hot_money"]
+
+        if "lockup" in selected_analysts:
+            analyst_nodes["lockup"] = create_lockup_watcher(self.quick_thinking_llm)
+            delete_nodes["lockup"] = create_msg_delete()
+            tool_nodes["lockup"] = self.tool_nodes["lockup"]
+
+        # Data Quality Gate — runs after all analysts and writes
+        # data_quality_summary into state for the bull/bear debate.
+        quality_gate_node = create_quality_gate(self.quick_thinking_llm)
+
         # Create researcher and manager nodes
         bull_researcher_node = create_bull_researcher(self.quick_thinking_llm)
         bear_researcher_node = create_bear_researcher(self.quick_thinking_llm)
@@ -101,7 +128,8 @@ class GraphSetup:
             )
             workflow.add_node(f"tools_{analyst_type}", tool_nodes[analyst_type])
 
-        # Add other nodes
+        # Add quality gate + other nodes
+        workflow.add_node("Quality Gate", quality_gate_node)
         workflow.add_node("Bull Researcher", bull_researcher_node)
         workflow.add_node("Bear Researcher", bear_researcher_node)
         workflow.add_node("Research Manager", research_manager_node)
@@ -130,12 +158,15 @@ class GraphSetup:
             )
             workflow.add_edge(current_tools, current_analyst)
 
-            # Connect to next analyst or to Bull Researcher if this is the last analyst
+            # Connect to next analyst or to the Quality Gate if this is the last analyst
             if i < len(selected_analysts) - 1:
                 next_analyst = f"{selected_analysts[i+1].capitalize()} Analyst"
                 workflow.add_edge(current_clear, next_analyst)
             else:
-                workflow.add_edge(current_clear, "Bull Researcher")
+                workflow.add_edge(current_clear, "Quality Gate")
+
+        # Quality Gate hands off to the bull/bear debate
+        workflow.add_edge("Quality Gate", "Bull Researcher")
 
         # Add remaining edges
         workflow.add_conditional_edges(

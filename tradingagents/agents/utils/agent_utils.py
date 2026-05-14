@@ -18,6 +18,16 @@ from tradingagents.agents.utils.news_data_tools import (
     get_insider_transactions,
     get_global_news
 )
+from tradingagents.agents.utils.signal_data_tools import (
+    get_profit_forecast,
+    get_hot_stocks,
+    get_northbound_flow,
+    get_concept_blocks,
+    get_fund_flow,
+    get_dragon_tiger_board,
+    get_lockup_expiry,
+    get_industry_comparison,
+)
 
 
 def get_language_instruction() -> str:
