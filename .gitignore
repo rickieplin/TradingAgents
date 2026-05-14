@@ -3,6 +3,16 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Node / npm artifacts. This is a pure-Python project; if anyone runs
+# `npx` (e.g. for the Mermaid CLI to render docs/architecture.md), npm
+# silently creates these in the repo root. They are 400MB+ and 30k+
+# files — never commit them.
+node_modules/
+package.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
 # C extensions
 *.so
 

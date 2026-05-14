@@ -9,13 +9,17 @@ description = "TradingAgents: Multi-Agents LLM Financial Trading Framework"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "langchain-core>=0.3.81",
+    # LangChain 1.x / LangGraph 1.x is a breaking redesign (the prebuilt
+    # module no longer ships ToolNode, message routing API changed).
+    # Pin to the 0.x line until we land a migration; without an upper
+    # bound a fresh `pip install` silently breaks the import chain.
+    "langchain-core>=0.3.81,<1.0",
     "backtrader>=1.9.78.123",
-    "langchain-anthropic>=0.3.15",
-    "langchain-experimental>=0.3.4",
-    "langchain-google-genai>=4.0.0",
-    "langchain-openai>=0.3.23",
-    "langgraph>=0.4.8",
+    "langchain-anthropic>=0.3.15,<1.0",
+    "langchain-experimental>=0.3.4,<0.4",
+    "langchain-google-genai>=2.0,<3.0",
+    "langchain-openai>=0.3.23,<1.0",
+    "langgraph>=0.4.8,<1.0",
     "langgraph-checkpoint-sqlite>=2.0.0",
     "pandas>=2.3.0",
     "parsel>=1.10.0",
