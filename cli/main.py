@@ -568,19 +568,18 @@ def get_user_selections():
         confirm_ollama_endpoint(backend_url)
 
     # Codex uses the OAuth session from `codex login` instead of an env
-    # var; verify the auth file is present and show the resolved account
-    # so the user can tell which ChatGPT account they're about to spend
-    # quota on.
+    # var; verify the auth file is present AND that the refresh token
+    # is still good before we kick off a long analysis run. A stale
+    # account_id check alone passes for revoked sessions — only an
+    # actual round-trip against the OAuth endpoint proves the session.
     if selected_llm_provider == "codex":
         from tradingagents.llm_clients.codex_auth import (
             CodexAuthError, load as load_codex_credentials,
         )
         try:
             creds = load_codex_credentials()
-            # Touching account_id forces the OAuth-block validation; we
-            # don't print it (it's a UUID, not user-recognisable), but a
-            # successful load means the session is good to go.
-            _ = creds.account_id
+            _ = creds.account_id  # validates the OAuth tokens block shape
+            creds.force_refresh()  # proves the refresh token still works
             console.print(
                 "[green]✓ Using ChatGPT subscription via codex login[/green]"
             )
