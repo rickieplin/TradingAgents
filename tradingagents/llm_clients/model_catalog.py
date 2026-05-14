@@ -153,6 +153,24 @@ MODEL_OPTIONS: ProviderModeOptions = {
     # so the two provider keys share one model list.
     "minimax": _MINIMAX_MODELS,
     "minimax-cn": _MINIMAX_MODELS,
+    # ChatGPT subscription via Codex login — uses the OAuth token from
+    # ~/.codex/auth.json against the WHAM Responses API at
+    # chatgpt.com/backend-api/codex. Full tool_calls + structured-output
+    # support, so it can fill both quick and deep slots like any other
+    # OpenAI-compatible provider. Model IDs are the subscription
+    # backend's slugs (not Platform API slugs).
+    "codex": {
+        "quick": [
+            ("GPT-5.4 - ChatGPT subscription, fast", "gpt-5.4"),
+            ("GPT-5.5 - ChatGPT subscription, latest", "gpt-5.5"),
+            ("Custom model ID", "custom"),
+        ],
+        "deep": [
+            ("GPT-5.5 - ChatGPT subscription, latest frontier", "gpt-5.5"),
+            ("GPT-5.4 - ChatGPT subscription, previous-gen", "gpt-5.4"),
+            ("Custom model ID", "custom"),
+        ],
+    },
     # OpenRouter: fetched dynamically. Azure: any deployed model name.
     # Ollama display labels intentionally omit a "local" marker — the
     # endpoint is now configurable via OLLAMA_BASE_URL, so the same labels

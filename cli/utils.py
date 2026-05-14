@@ -251,6 +251,10 @@ def select_llm_provider() -> tuple[str, str | None]:
         ("OpenRouter", "openrouter", "https://openrouter.ai/api/v1"),
         ("Azure OpenAI", "azure", None),
         ("Ollama", "ollama", ollama_url),
+        # Codex routes through the user's ChatGPT subscription. The
+        # `base_url` is set by codex_client.py (the WHAM Responses-API
+        # endpoint at chatgpt.com/backend-api/codex), not by the user.
+        ("Codex (ChatGPT subscription)", "codex", None),
     ]
 
     choice = questionary.select(

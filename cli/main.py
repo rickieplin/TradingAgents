@@ -567,6 +567,27 @@ def get_user_selections():
     if selected_llm_provider == "ollama":
         confirm_ollama_endpoint(backend_url)
 
+    # Codex uses the OAuth session from `codex login` instead of an env
+    # var; verify the auth file is present and show the resolved account
+    # so the user can tell which ChatGPT account they're about to spend
+    # quota on.
+    if selected_llm_provider == "codex":
+        from tradingagents.llm_clients.codex_auth import (
+            CodexAuthError, load as load_codex_credentials,
+        )
+        try:
+            creds = load_codex_credentials()
+            # Touching account_id forces the OAuth-block validation; we
+            # don't print it (it's a UUID, not user-recognisable), but a
+            # successful load means the session is good to go.
+            _ = creds.account_id
+            console.print(
+                "[green]✓ Using ChatGPT subscription via codex login[/green]"
+            )
+        except CodexAuthError as exc:
+            console.print(f"[red]Codex auth failed: {exc}[/red]")
+            raise typer.Exit(1)
+
     # Confirm the provider's API key is present; prompt the user to paste
     # one and persist it to .env if it's missing, so the analysis run
     # doesn't fail later at the first API call.
@@ -580,6 +601,11 @@ def get_user_selections():
     )
     selected_shallow_thinker = select_shallow_thinking_agent(selected_llm_provider)
     selected_deep_thinker = select_deep_thinking_agent(selected_llm_provider)
+    # deep_llm_provider/deep_backend_url are reserved for future split
+    # configurations (e.g. running deep on Codex while quick stays on
+    # OpenAI). The interactive CLI always uses one provider for both.
+    deep_provider = None
+    deep_backend_url = None
 
     # Step 8: Provider-specific thinking configuration
     thinking_level = None
@@ -619,6 +645,8 @@ def get_user_selections():
         "research_depth": selected_research_depth,
         "llm_provider": selected_llm_provider.lower(),
         "backend_url": backend_url,
+        "deep_llm_provider": deep_provider,
+        "deep_backend_url": deep_backend_url,
         "shallow_thinker": selected_shallow_thinker,
         "deep_thinker": selected_deep_thinker,
         "google_thinking_level": thinking_level,
@@ -972,6 +1000,8 @@ def run_analysis(checkpoint: bool = False):
     config["deep_think_llm"] = selections["deep_thinker"]
     config["backend_url"] = selections["backend_url"]
     config["llm_provider"] = selections["llm_provider"].lower()
+    config["deep_llm_provider"] = selections.get("deep_llm_provider")
+    config["deep_backend_url"] = selections.get("deep_backend_url")
     # Provider-specific thinking configuration
     config["google_thinking_level"] = selections.get("google_thinking_level")
     config["openai_reasoning_effort"] = selections.get("openai_reasoning_effort")

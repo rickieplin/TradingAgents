@@ -12,6 +12,13 @@ _ENV_OVERRIDES = {
     "TRADINGAGENTS_DEEP_THINK_LLM":       "deep_think_llm",
     "TRADINGAGENTS_QUICK_THINK_LLM":      "quick_think_llm",
     "TRADINGAGENTS_LLM_BACKEND_URL":      "backend_url",
+    # Optional per-slot provider override. When unset, both slots share
+    # ``llm_provider`` / ``backend_url``. Used when the deep slot runs on
+    # a provider that can't bind tools (e.g. ``codex``) while the
+    # tool-driven analyst (quick) slot needs an OpenAI-compatible
+    # provider.
+    "TRADINGAGENTS_DEEP_LLM_PROVIDER":    "deep_llm_provider",
+    "TRADINGAGENTS_DEEP_BACKEND_URL":     "deep_backend_url",
     "TRADINGAGENTS_OUTPUT_LANGUAGE":      "output_language",
     "TRADINGAGENTS_MAX_DEBATE_ROUNDS":    "max_debate_rounds",
     "TRADINGAGENTS_MAX_RISK_ROUNDS":      "max_risk_discuss_rounds",
@@ -60,6 +67,10 @@ DEFAULT_CONFIG = _apply_env_overrides({
     # provider-specific URL here would leak (e.g. OpenAI's /v1 was previously
     # being forwarded to Gemini, producing malformed request URLs).
     "backend_url": None,
+    # Per-slot provider override (see _ENV_OVERRIDES comment above).
+    # ``None`` means "use llm_provider/backend_url for both slots".
+    "deep_llm_provider": None,
+    "deep_backend_url": None,
     # Provider-specific thinking configuration
     "google_thinking_level": None,      # "high", "minimal", etc.
     "openai_reasoning_effort": None,    # "medium", "high", "low"

@@ -32,6 +32,9 @@ PROVIDER_API_KEY_ENV: dict[str, Optional[str]] = {
     "openrouter": "OPENROUTER_API_KEY",
     # Local runtimes do not authenticate.
     "ollama":     None,
+    # Codex CLI uses `codex login` (OAuth against the user's ChatGPT
+    # subscription); credentials live in ~/.codex/, not an env var.
+    "codex":      None,
 }
 
 
