@@ -171,6 +171,25 @@ MODEL_OPTIONS: ProviderModeOptions = {
             ("Custom model ID", "custom"),
         ],
     },
+    # Claude Pro/Max subscription via `claude` OAuth — uses the bearer
+    # token from the user's Claude Code session (macOS keychain or
+    # ~/.claude/.credentials.json) against the standard Anthropic API.
+    # Same Messages-API wire format as the `anthropic` provider, so the
+    # tool_calls / structured-output flows work identically; the model
+    # IDs are the same as Anthropic's curated set.
+    "claude_subscription": {
+        "quick": [
+            ("Claude Sonnet 4.6 - Best speed/intelligence balance", "claude-sonnet-4-6"),
+            ("Claude Haiku 4.5 - Fastest, near-frontier", "claude-haiku-4-5"),
+            ("Custom model ID", "custom"),
+        ],
+        "deep": [
+            ("Claude Opus 4.7 - Latest frontier", "claude-opus-4-7"),
+            ("Claude Sonnet 4.6 - Speed/intelligence balance", "claude-sonnet-4-6"),
+            ("Claude Opus 4.6 - Previous-gen frontier", "claude-opus-4-6"),
+            ("Custom model ID", "custom"),
+        ],
+    },
     # OpenRouter: fetched dynamically. Azure: any deployed model name.
     # Ollama display labels intentionally omit a "local" marker — the
     # endpoint is now configurable via OLLAMA_BASE_URL, so the same labels
