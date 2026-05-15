@@ -12,7 +12,16 @@ from tradingagents.llm_clients.model_catalog import get_model_options
 
 console = Console()
 
-TICKER_INPUT_EXAMPLES = "Examples: SPY, CNC.TO, 7203.T, 0700.HK"
+# A-shares share one suffix per exchange regardless of sub-board:
+#   .SH / .SS — Shanghai (主板 600xxx, 科创板 688xxx)              → CSI 300
+#   .SZ       — Shenzhen (主板 000xxx, 中小板 002xxx, 创业板 300xxx) → CSI 300
+#   .BJ       — Beijing  (北交所 8/4xxxxx)                          → BSE 50
+# yfinance's native Shanghai suffix is .SS; we accept .SH as an alias.
+TICKER_INPUT_EXAMPLES = (
+    "Examples: SPY, 600519.SH (沪市主板), 688981.SS (科创板), "
+    "000858.SZ (深市主板), 300750.SZ (创业板), 832000.BJ (北交所), "
+    "0700.HK, 7203.T, CNC.TO"
+)
 
 ANALYST_ORDER = [
     ("Market Analyst", AnalystType.MARKET),
