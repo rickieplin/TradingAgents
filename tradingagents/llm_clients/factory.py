@@ -58,4 +58,8 @@ def create_llm_client(
         from .codex_client import CodexClient
         return CodexClient(model, base_url, **kwargs)
 
+    if provider_lower == "claude_subscription":
+        from .claude_subscription_client import ClaudeSubscriptionClient
+        return ClaudeSubscriptionClient(model, base_url, **kwargs)
+
     raise ValueError(f"Unsupported LLM provider: {provider}")

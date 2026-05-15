@@ -587,6 +587,25 @@ def get_user_selections():
             console.print(f"[red]Codex auth failed: {exc}[/red]")
             raise typer.Exit(1)
 
+    # Claude subscription uses the `claude` CLI OAuth session (macOS
+    # keychain or ~/.claude/.credentials.json). Same rationale as the
+    # Codex preflight above: prove the refresh token is still valid
+    # before a long graph run starts, so revoked sessions surface here
+    # rather than 30 minutes in.
+    if selected_llm_provider == "claude_subscription":
+        from tradingagents.llm_clients.claude_auth import (
+            ClaudeAuthError, load as load_claude_credentials,
+        )
+        try:
+            creds = load_claude_credentials()
+            creds.force_refresh()  # proves the refresh token still works
+            console.print(
+                "[green]✓ Using Claude Pro/Max subscription via Claude Code OAuth[/green]"
+            )
+        except ClaudeAuthError as exc:
+            console.print(f"[red]Claude subscription auth failed: {exc}[/red]")
+            raise typer.Exit(1)
+
     # Confirm the provider's API key is present; prompt the user to paste
     # one and persist it to .env if it's missing, so the analysis run
     # doesn't fail later at the first API call.
@@ -628,7 +647,7 @@ def get_user_selections():
             )
         )
         reasoning_effort = ask_openai_reasoning_effort()
-    elif provider_lower == "anthropic":
+    elif provider_lower in ("anthropic", "claude_subscription"):
         console.print(
             create_question_box(
                 "Step 8: Effort Level",

@@ -251,6 +251,11 @@ def select_llm_provider() -> tuple[str, str | None]:
         ("OpenRouter", "openrouter", "https://openrouter.ai/api/v1"),
         ("Azure OpenAI", "azure", None),
         ("Ollama", "ollama", ollama_url),
+        # Claude routes through the user's Pro/Max subscription via the
+        # `claude` OAuth session (macOS keychain or
+        # ~/.claude/.credentials.json). The `base_url` is pinned by
+        # claude_subscription_client.py to api.anthropic.com.
+        ("Claude (Pro/Max subscription)", "claude_subscription", None),
         # Codex routes through the user's ChatGPT subscription. The
         # `base_url` is set by codex_client.py (the WHAM Responses-API
         # endpoint at chatgpt.com/backend-api/codex), not by the user.

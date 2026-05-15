@@ -35,6 +35,10 @@ PROVIDER_API_KEY_ENV: dict[str, Optional[str]] = {
     # Codex CLI uses `codex login` (OAuth against the user's ChatGPT
     # subscription); credentials live in ~/.codex/, not an env var.
     "codex":      None,
+    # Claude Code CLI uses `claude` OAuth (against the user's Pro/Max
+    # subscription); credentials live in the macOS keychain or
+    # ~/.claude/.credentials.json, not an env var.
+    "claude_subscription": None,
 }
 
 
