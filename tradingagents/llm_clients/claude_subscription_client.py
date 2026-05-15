@@ -35,7 +35,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional
 
-from .anthropic_client import NormalizedChatAnthropic
+from .anthropic_client import NormalizedChatAnthropic, effort_to_thinking_kwargs
 from .base_client import BaseLLMClient
 from .claude_auth import (
     ClaudeAuthError,
@@ -155,7 +155,7 @@ class ClaudeSubscriptionClient(BaseLLMClient):
     # Forwarded ChatAnthropic kwargs (mirrors the Anthropic client's list).
     _PASSTHROUGH_KWARGS = (
         "timeout", "max_retries", "max_tokens",
-        "callbacks", "http_client", "http_async_client", "effort",
+        "callbacks", "http_client", "http_async_client",
     )
 
     def __init__(
@@ -220,6 +220,12 @@ class ClaudeSubscriptionClient(BaseLLMClient):
         for key in self._PASSTHROUGH_KWARGS:
             if key in self.kwargs:
                 llm_kwargs[key] = self.kwargs[key]
+
+        thinking_kwargs = effort_to_thinking_kwargs(
+            self.kwargs.get("effort"),
+            llm_kwargs.get("max_tokens"),
+        )
+        llm_kwargs.update(thinking_kwargs)
 
         llm = ChatClaudeSubscription(**llm_kwargs)
 
